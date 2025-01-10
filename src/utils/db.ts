@@ -1,4 +1,4 @@
-import { dbConfig } from '../config/environment';
+import { dbConfig, apiUrl } from '../config/environment';
 
 interface DbCredentials {
   host: string;
@@ -18,7 +18,7 @@ export const setDbCredentials = (credentials: DbCredentials) => {
 
 export const executeQuery = async (query: string, params: any[] = []) => {
   try {
-    const response = await fetch('/api/query', {
+    const response = await fetch(`${apiUrl}/api/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
