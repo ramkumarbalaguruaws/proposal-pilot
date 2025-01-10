@@ -54,8 +54,8 @@ interface ProposalTableProps {
 export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProps) => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
-  const [priorityFilter, setPriorityFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [sortField, setSortField] = useState<keyof Proposal>("projectName");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -95,8 +95,8 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
       const matchesSearch = proposal.projectName.toLowerCase().includes(search.toLowerCase()) ||
         proposal.customer.toLowerCase().includes(search.toLowerCase()) ||
         proposal.salesDirector.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = !statusFilter || proposal.status === statusFilter;
-      const matchesPriority = !priorityFilter || proposal.priority === priorityFilter;
+      const matchesStatus = statusFilter === "all" || proposal.status === statusFilter;
+      const matchesPriority = priorityFilter === "all" || proposal.priority === priorityFilter;
       return matchesSearch && matchesStatus && matchesPriority;
     })
     .sort((a, b) => {
@@ -127,7 +127,7 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="ongoing">Ongoing</SelectItem>
             <SelectItem value="approved">Approved</SelectItem>
             <SelectItem value="rejected">Rejected</SelectItem>
@@ -138,7 +138,7 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
             <SelectValue placeholder="Filter by priority" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Priorities</SelectItem>
+            <SelectItem value="all">All Priorities</SelectItem>
             <SelectItem value="P1">P1</SelectItem>
             <SelectItem value="P2">P2</SelectItem>
             <SelectItem value="P3">P3</SelectItem>
