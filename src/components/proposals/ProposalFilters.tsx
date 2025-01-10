@@ -24,7 +24,7 @@ interface ProposalFiltersProps {
   priorityFilter: string;
   setPriorityFilter: (value: string) => void;
   columnVisibility: ColumnVisibility;
-  setColumnVisibility: (value: Record<string, boolean>) => void;
+  setColumnVisibility: (value: ColumnVisibility | ((prev: ColumnVisibility) => ColumnVisibility)) => void;
   startDate: string;
   setStartDate: (value: string) => void;
   endDate: string;
