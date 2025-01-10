@@ -29,6 +29,7 @@ const initialProposals: Proposal[] = [
     commercialValue: 2500000,
     status: "ongoing",
     remarks: "Awaiting final technical review",
+    user_id: 1
   },
   {
     id: 2,
@@ -46,6 +47,7 @@ const initialProposals: Proposal[] = [
     commercialValue: 1200000,
     status: "ongoing",
     remarks: "Client requested additional coverage details",
+    user_id: 2
   },
   {
     id: 3,
@@ -63,6 +65,7 @@ const initialProposals: Proposal[] = [
     commercialValue: 3000000,
     status: "blocked",
     remarks: "Pending regulatory approval",
+    user_id: 3
   }
 ];
 
