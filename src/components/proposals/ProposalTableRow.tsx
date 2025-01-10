@@ -8,6 +8,7 @@ interface ProposalTableRowProps {
   columnVisibility: Record<string, boolean>;
   onEdit: (proposal: Proposal) => void;
   onDelete: (id: number) => void;
+  isAdmin: boolean;
 }
 
 export const ProposalTableRow = ({
@@ -15,6 +16,7 @@ export const ProposalTableRow = ({
   columnVisibility,
   onEdit,
   onDelete,
+  isAdmin,
 }: ProposalTableRowProps) => {
   return (
     <TableRow key={row.id}>
@@ -42,10 +44,20 @@ export const ProposalTableRow = ({
       {columnVisibility.remarks && <TableCell>{row.remarks}</TableCell>}
       <TableCell>
         <div className="flex space-x-2">
-          <Button variant="ghost" size="icon" onClick={() => onEdit(row)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(row)}
+            className={!isAdmin ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <Edit className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => onDelete(row.id)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(row.id)}
+            className={!isAdmin ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>

@@ -16,6 +16,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="w-64 bg-gray-900 text-white p-4">
         <div className="mb-8">
           <h1 className="text-xl font-bold">Proposal Management</h1>
+          <p className="text-sm text-gray-400">Logged in as: {user.role}</p>
         </div>
         <nav className="space-y-2">
           <Button

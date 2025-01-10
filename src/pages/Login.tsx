@@ -13,8 +13,13 @@ const Login = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Mock authentication - in a real app, this would be an API call
     if (username === "admin" && password === "admin") {
       localStorage.setItem("user", JSON.stringify({ username, role: "admin" }));
+      navigate("/dashboard");
+    } else if (username === "user" && password === "user") {
+      localStorage.setItem("user", JSON.stringify({ username, role: "user" }));
       navigate("/dashboard");
     } else {
       toast({
@@ -36,7 +41,7 @@ const Login = () => {
             <div className="space-y-2">
               <Input
                 type="text"
-                placeholder="Username"
+                placeholder="Username (admin/user)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -44,7 +49,7 @@ const Login = () => {
             <div className="space-y-2">
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="Password (admin/user)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

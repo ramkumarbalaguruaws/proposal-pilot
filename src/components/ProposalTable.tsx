@@ -76,9 +76,21 @@ export const ProposalTable = ({
     remarks: true,
   });
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isAdmin = user.role === "admin";
+
   const itemsPerPage = 10;
 
   const handleDelete = (id: number) => {
+    if (!isAdmin) {
+      toast({
+        variant: "destructive",
+        title: "Access Denied",
+        description: "Only administrators can delete proposals.",
+      });
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this proposal?")) {
       onDelete(id);
       toast({
@@ -149,8 +161,15 @@ export const ProposalTable = ({
                 key={row.id}
                 row={row}
                 columnVisibility={columnVisibility}
-                onEdit={onEdit}
+                onEdit={isAdmin ? onEdit : () => {
+                  toast({
+                    variant: "destructive",
+                    title: "Access Denied",
+                    description: "Only administrators can edit proposals.",
+                  });
+                }}
                 onDelete={handleDelete}
+                isAdmin={isAdmin}
               />
             ))}
           </TableBody>
