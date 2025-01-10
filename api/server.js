@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // SQL for creating database and necessary tables
-const CREATE_DATABASE = `CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`;
+const CREATE_DATABASE = `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\``;
 const CREATE_PROPOSALS_TABLE = `
   CREATE TABLE IF NOT EXISTS proposals (
     id INT AUTO_INCREMENT PRIMARY KEY,
