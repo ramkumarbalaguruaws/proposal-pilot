@@ -24,6 +24,23 @@ export type Proposal = {
   remarks: string;
 };
 
+export type ColumnVisibility = {
+  projectName: boolean;
+  priority: boolean;
+  country: boolean;
+  bandwidth: boolean;
+  gateway: boolean;
+  terminalCount: boolean;
+  terminalType: boolean;
+  customer: boolean;
+  salesDirector: boolean;
+  submissionDate: boolean;
+  proposalLink: boolean;
+  commercialValue: boolean;
+  status: boolean;
+  remarks: boolean;
+};
+
 interface ProposalTableProps {
   proposals: Proposal[];
   onEdit: (proposal: Proposal) => void;
@@ -42,7 +59,7 @@ export const ProposalTable = ({
   const [sortField, setSortField] = useState<keyof Proposal>("projectName");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [columnVisibility, setColumnVisibility] = useState({
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>({
     projectName: true,
     priority: true,
     country: true,

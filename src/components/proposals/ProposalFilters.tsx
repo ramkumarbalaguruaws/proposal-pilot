@@ -15,6 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { ColumnVisibility } from "../ProposalTable";
 
 interface ProposalFiltersProps {
   search: string;
@@ -23,8 +24,8 @@ interface ProposalFiltersProps {
   setStatusFilter: (value: string) => void;
   priorityFilter: string;
   setPriorityFilter: (value: string) => void;
-  columnVisibility: Record<string, boolean>;
-  setColumnVisibility: (value: Record<string, boolean>) => void;
+  columnVisibility: ColumnVisibility;
+  setColumnVisibility: (value: ColumnVisibility) => void;
 }
 
 export const ProposalFilters = ({
@@ -58,7 +59,10 @@ export const ProposalFilters = ({
                 className="capitalize"
                 checked={value}
                 onCheckedChange={(checked) =>
-                  setColumnVisibility((prev) => ({ ...prev, [key]: checked }))
+                  setColumnVisibility({
+                    ...columnVisibility,
+                    [key]: checked,
+                  })
                 }
               >
                 {key.replace(/([A-Z])/g, " $1").trim()}
