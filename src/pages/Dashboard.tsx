@@ -25,6 +25,25 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        // First, let's insert some dummy data if the table is empty
+        const [checkData] = await executeQuery('SELECT COUNT(*) as count FROM proposals');
+        if (checkData[0]?.count === 0) {
+          await executeQuery(`
+            INSERT INTO proposals (project_name, priority, country, bandwidth, gateway, terminal_count, 
+              terminal_type, customer, sales_director, submission_date, proposal_link, commercial_value, status, remarks) 
+            VALUES 
+              ('Global Satellite Network', 'P1', 'United States', '500 MHz', 'GW-NAM-01', 1500, 'VSATs', 
+                'TechCorp International', 'Sarah Johnson', '2024-01-15', 'https://example.com/gne-2024', 2500000, 'approved', 
+                'Awaiting final technical review'),
+              ('Maritime Connectivity', 'P2', 'Singapore', '200 MHz', 'GW-APAC-03', 750, 'Maritime Terminals', 
+                'Ocean Shipping Co', 'Michael Chen', '2024-01-20', 'https://example.com/mcs-2024', 1200000, 'ongoing', 
+                'Client requested additional coverage details'),
+              ('Rural Broadband', 'P1', 'Brazil', '300 MHz', 'GW-SAM-02', 2000, 'Consumer Terminals', 
+                'ConnectBR', 'Ana Silva', '2024-01-10', 'https://example.com/rbi-2024', 3000000, 'rejected', 
+                'Pending regulatory approval')
+          `);
+        }
+
         // Fetch total proposals
         const [totalResult] = await executeQuery('SELECT COUNT(*) as total FROM proposals');
         const total = totalResult[0]?.total || 0;
@@ -74,7 +93,6 @@ const Dashboard = () => {
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
         
-        {/* Database Credentials Section */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Database Configuration</CardTitle>
