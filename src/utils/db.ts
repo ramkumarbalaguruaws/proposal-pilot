@@ -1,233 +1,28 @@
-// ... keep existing code (imports and other utilities)
+import mysql from 'mysql2/promise';
+import { dbConfig } from '../config/environment';
 
-const mockData = {
-  proposals: [
-    {
-      id: 1,
-      projectName: "Global Satellite Network Expansion",
-      priority: "P1",
-      country: "United States",
-      bandwidth: "500 MHz",
-      gateway: "GW-NAM-01",
-      terminalCount: 1500,
-      terminalType: "VSATs",
-      customer: "TechCorp International",
-      salesDirector: "Sarah Johnson",
-      submissionDate: "2024-01-15",
-      proposalLink: "https://proposals.example.com/gne-2024",
-      commercialValue: 2500000,
-      status: "ongoing",
-      remarks: "Awaiting final technical review",
-      user_id: 1
-    },
-    {
-      id: 2,
-      projectName: "Maritime Connectivity Solution",
-      priority: "P2",
-      country: "Singapore",
-      bandwidth: "200 MHz",
-      gateway: "GW-APAC-03",
-      terminalCount: 750,
-      terminalType: "Maritime Terminals",
-      customer: "Ocean Shipping Co",
-      salesDirector: "Michael Chen",
-      submissionDate: "2024-01-20",
-      proposalLink: "https://proposals.example.com/mcs-2024",
-      commercialValue: 1200000,
-      status: "ongoing",
-      remarks: "Client requested additional coverage details",
-      user_id: 2
-    },
-    {
-      id: 3,
-      projectName: "Rural Broadband Initiative",
-      priority: "P1",
-      country: "Brazil",
-      bandwidth: "300 MHz",
-      gateway: "GW-SAM-02",
-      terminalCount: 2000,
-      terminalType: "Consumer Terminals",
-      customer: "ConnectBR",
-      salesDirector: "Ana Silva",
-      submissionDate: "2024-01-10",
-      proposalLink: "https://proposals.example.com/rbi-2024",
-      commercialValue: 3000000,
-      status: "blocked",
-      remarks: "Pending regulatory approval",
-      user_id: 3
-    },
-    {
-      id: 4,
-      projectName: "Urban 5G Integration",
-      priority: "P1",
-      country: "Japan",
-      bandwidth: "400 MHz",
-      gateway: "GW-APAC-01",
-      terminalCount: 3000,
-      terminalType: "5G Terminals",
-      customer: "TelecomJP",
-      salesDirector: "Yuki Tanaka",
-      submissionDate: "2024-02-01",
-      proposalLink: "https://proposals.example.com/5g-2024",
-      commercialValue: 4500000,
-      status: "closed",
-      remarks: "Successfully implemented",
-      user_id: 1
-    },
-    {
-      id: 5,
-      projectName: "Desert Connectivity Project",
-      priority: "P2",
-      country: "United Arab Emirates",
-      bandwidth: "250 MHz",
-      gateway: "GW-ME-02",
-      terminalCount: 1000,
-      terminalType: "Mobile Terminals",
-      customer: "UAE Connect",
-      salesDirector: "Mohammed Al-Said",
-      submissionDate: "2024-02-15",
-      proposalLink: "https://proposals.example.com/dcp-2024",
-      commercialValue: 2800000,
-      status: "ongoing",
-      remarks: "Technical assessment in progress",
-      user_id: 2
-    }
-  ],
-  users: [
-    {
-      id: 1,
-      username: "johndoe",
-      email: "john@example.com",
-      role: "admin",
-      createdAt: "2024-01-01T00:00:00Z",
-      lastLogin: "2024-01-10T15:30:00Z"
-    },
-    {
-      id: 2,
-      username: "janesmith",
-      email: "jane@example.com",
-      role: "user",
-      createdAt: "2024-01-02T00:00:00Z",
-      lastLogin: "2024-01-09T12:45:00Z"
-    },
-    {
-      id: 3,
-      username: "bobwilson",
-      email: "bob@example.com",
-      role: "user",
-      createdAt: "2024-01-03T00:00:00Z",
-      lastLogin: null
-    }
-  ]
-};
+let connection: mysql.Connection | null = null;
 
-const getDbConfig = () => {
-  if (process.env.NODE_ENV === 'development') {
-    const storedConfig = localStorage.getItem('dbConfig');
-    if (storedConfig) {
-      return JSON.parse(storedConfig);
-    }
-  }
-  
-  // Use AWS RDS credentials from environment variables
-  return {
-    host: import.meta.env.DB_HOST || process.env.DB_HOST,
-    user: import.meta.env.DB_USER || process.env.DB_USER,
-    password: import.meta.env.DB_PASSWORD || process.env.DB_PASSWORD,
-    database: import.meta.env.DB_NAME || process.env.DB_NAME,
-    port: import.meta.env.DB_PORT || process.env.DB_PORT || 3306,
-    ssl: {
-      rejectUnauthorized: false // Required for AWS RDS SSL connection
-    }
-  };
-};
-
-// Function to set development credentials
-export const setDbCredentials = (credentials: {
-  host: string;
-  user: string;
-  password: string;
-  database: string;
-  port?: number;
-}) => {
-  if (process.env.NODE_ENV === 'development') {
-    localStorage.setItem('dbConfig', JSON.stringify(credentials));
-    console.log('Database credentials stored for development');
-  }
-};
-
-// Test database connection
-const testConnection = async () => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Mock database connection successful');
-    return true;
-  }
-  
-  try {
-    const config = getDbConfig();
-    const response = await fetch('/api/test-connection', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(config)
+export const getConnection = async () => {
+  if (!connection) {
+    connection = await mysql.createConnection({
+      host: dbConfig.host,
+      user: dbConfig.user,
+      password: dbConfig.password,
+      database: dbConfig.database,
+      port: dbConfig.port,
     });
-    
-    if (!response.ok) {
-      throw new Error('Database connection failed');
-    }
-    
-    console.log('Database connection successful');
-    return true;
+  }
+  return connection;
+};
+
+export const executeQuery = async (query: string, params: any[] = []) => {
+  try {
+    const conn = await getConnection();
+    const [results] = await conn.execute(query, params);
+    return results;
   } catch (error) {
-    console.error('Error connecting to database:', error);
+    console.error('Database error:', error);
     throw error;
   }
 };
-
-// Query executor
-const executeQuery = async (query: string, params?: any[]) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Mock query executed:', query, params);
-    // Return mock data based on the query
-    if (query.toLowerCase().includes('proposals')) {
-      return mockData.proposals;
-    }
-    if (query.toLowerCase().includes('users')) {
-      return mockData.users;
-    }
-    return [];
-  }
-
-  try {
-    const config = getDbConfig();
-    const response = await fetch('/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query,
-        params,
-        ...config
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('Query execution failed');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error executing query:', error);
-    throw error;
-  }
-};
-
-// Initialize mock data for development
-if (process.env.NODE_ENV === 'development') {
-  console.log('Mock database initialized with sample data');
-}
-
-export { executeQuery, testConnection };
-

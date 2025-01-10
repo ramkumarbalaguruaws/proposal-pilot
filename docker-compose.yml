@@ -8,10 +8,10 @@ services:
     ports:
       - "8080:80"
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_PORT=${DB_PORT}
+      - VITE_DB_HOST=${DB_HOST}
+      - VITE_DB_USER=${DB_USER}
+      - VITE_DB_PASSWORD=${DB_PASSWORD}
+      - VITE_DB_NAME=${DB_NAME}
+      - VITE_DB_PORT=${DB_PORT:-3306}
       - NODE_ENV=production
     restart: unless-stopped
