@@ -10,7 +10,7 @@ export const DbCredentialsManager = () => {
     user: '',
     password: '',
     database: '',
-    port: '3306'  // Default MySQL port
+    port: 3306  // Default MySQL port as a number
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,7 +50,8 @@ export const DbCredentialsManager = () => {
         <Input
           placeholder="Port (default: 3306)"
           value={credentials.port}
-          onChange={(e) => setCredentials(prev => ({ ...prev, port: e.target.value }))}
+          onChange={(e) => setCredentials(prev => ({ ...prev, port: Number(e.target.value) }))}
+          type="number"
         />
       </div>
       <Button type="submit" className="w-full">Save Credentials</Button>
