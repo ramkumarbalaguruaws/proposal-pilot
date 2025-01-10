@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly DB_USER: string
   readonly DB_PASSWORD: string
   readonly DB_NAME: string
+  readonly DB_PORT: string
   readonly NODE_ENV: 'development' | 'production'
 }
 

@@ -90,7 +90,7 @@ const mockData = {
   users: []
 };
 
-// Get credentials from localStorage for development
+// Get credentials from environment variables or localStorage for development
 const getDbConfig = () => {
   if (process.env.NODE_ENV === 'development') {
     const storedConfig = localStorage.getItem('dbConfig');
@@ -99,12 +99,16 @@ const getDbConfig = () => {
     }
   }
   
-  // Fall back to environment variables or defaults
+  // Use AWS RDS credentials from environment variables
   return {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'proposal_db'
+    host: import.meta.env.DB_HOST || process.env.DB_HOST,
+    user: import.meta.env.DB_USER || process.env.DB_USER,
+    password: import.meta.env.DB_PASSWORD || process.env.DB_PASSWORD,
+    database: import.meta.env.DB_NAME || process.env.DB_NAME,
+    port: import.meta.env.DB_PORT || process.env.DB_PORT || 3306,
+    ssl: {
+      rejectUnauthorized: false // Required for AWS RDS SSL connection
+    }
   };
 };
 
@@ -114,6 +118,7 @@ export const setDbCredentials = (credentials: {
   user: string;
   password: string;
   database: string;
+  port?: number;
 }) => {
   if (process.env.NODE_ENV === 'development') {
     localStorage.setItem('dbConfig', JSON.stringify(credentials));
@@ -121,7 +126,7 @@ export const setDbCredentials = (credentials: {
   }
 };
 
-// Mock connection test
+// Test database connection
 const testConnection = async () => {
   if (process.env.NODE_ENV === 'development') {
     console.log('Mock database connection successful');
@@ -129,12 +134,13 @@ const testConnection = async () => {
   }
   
   try {
+    const config = getDbConfig();
     const response = await fetch('/api/test-connection', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(getDbConfig())
+      body: JSON.stringify(config)
     });
     
     if (!response.ok) {
@@ -149,7 +155,7 @@ const testConnection = async () => {
   }
 };
 
-// Mock query executor
+// Query executor
 const executeQuery = async (query: string, params?: any[]) => {
   if (process.env.NODE_ENV === 'development') {
     console.log('Mock query executed:', query, params);
@@ -161,6 +167,7 @@ const executeQuery = async (query: string, params?: any[]) => {
   }
 
   try {
+    const config = getDbConfig();
     const response = await fetch('/api/query', {
       method: 'POST',
       headers: {
@@ -169,7 +176,7 @@ const executeQuery = async (query: string, params?: any[]) => {
       body: JSON.stringify({
         query,
         params,
-        ...getDbConfig()
+        ...config
       })
     });
 
@@ -184,7 +191,7 @@ const executeQuery = async (query: string, params?: any[]) => {
   }
 };
 
-// Initialize mock data
+// Initialize mock data for development
 if (process.env.NODE_ENV === 'development') {
   console.log('Mock database initialized with sample data');
 }
