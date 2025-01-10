@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User } from "@/types/user";
 
 interface UserDialogProps {
@@ -40,6 +40,19 @@ export const UserDialog = ({
     }
   );
 
+  // Reset form when dialog opens/closes or user changes
+  useEffect(() => {
+    if (user) {
+      setUserData(user);
+    } else {
+      setUserData({
+        username: "",
+        email: "",
+        role: "user",
+      });
+    }
+  }, [user, open]);
+
   const handleSave = () => {
     onSave(userData);
     onOpenChange(false);
@@ -47,12 +60,12 @@ export const UserDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className={user ? "border-blue-500" : "border-green-500"}>
         <DialogHeader>
-          <DialogTitle>{user ? "Edit User" : "Create User"}</DialogTitle>
+          <DialogTitle>{user ? "Edit User" : "Create New User"}</DialogTitle>
           <DialogDescription>
             {user
-              ? "Edit user details below"
+              ? `Editing user ${user.username}`
               : "Fill in the details to create a new user"}
           </DialogDescription>
         </DialogHeader>
@@ -68,6 +81,7 @@ export const UserDialog = ({
                 setUserData({ ...userData, username: e.target.value })
               }
               className="col-span-3"
+              placeholder={user ? user.username : "Enter username"}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -82,6 +96,7 @@ export const UserDialog = ({
                 setUserData({ ...userData, email: e.target.value })
               }
               className="col-span-3"
+              placeholder={user ? user.email : "Enter email"}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -105,7 +120,9 @@ export const UserDialog = ({
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave} variant={user ? "default" : "default"}>
+            {user ? "Save Changes" : "Create User"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
