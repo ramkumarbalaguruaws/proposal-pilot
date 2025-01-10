@@ -1,4 +1,5 @@
-// Mock data service for development
+// ... keep existing code (imports and other utilities)
+
 const mockData = {
   proposals: [
     {
@@ -17,6 +18,7 @@ const mockData = {
       commercialValue: 2500000,
       status: "ongoing",
       remarks: "Awaiting final technical review",
+      user_id: 1
     },
     {
       id: 2,
@@ -34,6 +36,7 @@ const mockData = {
       commercialValue: 1200000,
       status: "ongoing",
       remarks: "Client requested additional coverage details",
+      user_id: 2
     },
     {
       id: 3,
@@ -51,6 +54,7 @@ const mockData = {
       commercialValue: 3000000,
       status: "blocked",
       remarks: "Pending regulatory approval",
+      user_id: 3
     },
     {
       id: 4,
@@ -68,6 +72,7 @@ const mockData = {
       commercialValue: 4500000,
       status: "closed",
       remarks: "Successfully implemented",
+      user_id: 1
     },
     {
       id: 5,
@@ -85,6 +90,7 @@ const mockData = {
       commercialValue: 2800000,
       status: "ongoing",
       remarks: "Technical assessment in progress",
+      user_id: 2
     }
   ],
   users: [
@@ -224,3 +230,4 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export { executeQuery, testConnection };
+

@@ -22,6 +22,7 @@ export type Proposal = {
   commercialValue: number;
   status: string;
   remarks: string;
+  user_id: number;
 };
 
 export type ColumnVisibility = {
@@ -89,6 +90,11 @@ export const ProposalTable = ({
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isAdmin = user.role === "admin";
 
+  // Filter proposals based on user role and user_id
+  const userProposals = isAdmin 
+    ? proposals 
+    : proposals.filter(proposal => proposal.user_id === user.id);
+
   const itemsPerPage = 10;
 
   const handleDelete = (id: number) => {
@@ -119,7 +125,7 @@ export const ProposalTable = ({
     }
   };
 
-  const filteredProposals = proposals
+  const filteredProposals = userProposals
     .filter((proposal) => {
       const matchesSearch =
         proposal.projectName.toLowerCase().includes(search.toLowerCase()) ||
