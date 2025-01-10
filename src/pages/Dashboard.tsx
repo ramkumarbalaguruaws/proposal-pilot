@@ -1,9 +1,8 @@
 import { Layout } from "@/components/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProposalSummary } from "@/components/proposals/ProposalSummary";
 import { DashboardFilters, type FilterState } from "@/components/dashboard/DashboardFilters";
+import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useQuery } from "@tanstack/react-query";
 import { executeQuery } from "@/utils/db";
 import type { Proposal } from "@/components/ProposalTable";
@@ -33,7 +32,6 @@ const Dashboard = () => {
       filters.salesDirector === "all" || proposal.salesDirector === filters.salesDirector;
     const matchesCountry =
       filters.country === "all" || proposal.country === filters.country;
-    // User filter can be implemented based on your user management system
     
     return matchesDate && matchesSalesDirector && matchesCountry;
   });
@@ -52,58 +50,15 @@ const Dashboard = () => {
 
         {/* Filters Section */}
         <section className="mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DashboardFilters
-                proposals={proposals}
-                onFiltersChange={setFilters}
-              />
-            </CardContent>
-          </Card>
+          <DashboardFilters
+            proposals={proposals}
+            onFiltersChange={setFilters}
+          />
         </section>
 
         {/* Charts Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Proposals by Priority</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={proposals}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="priority" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="commercialValue" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Proposals by Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={proposals}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="status" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="commercialValue" fill="#4f46e5" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <DashboardCharts proposals={filteredProposals} />
         </section>
       </div>
     </Layout>
