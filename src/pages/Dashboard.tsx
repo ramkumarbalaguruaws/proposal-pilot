@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Layout } from "@/components/Layout";
+import { DbCredentialsManager } from "@/components/DbCredentialsManager";
 
 const data = [
   { name: 'P1', value: 4 },
@@ -13,6 +14,11 @@ const Dashboard = () => {
     <Layout>
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-6">
+            <DbCredentialsManager />
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Card>
             <CardHeader>

@@ -1,11 +1,39 @@
 import mysql from 'mysql2/promise';
 
+// Get credentials from localStorage for development
+const getDbConfig = () => {
+  if (process.env.NODE_ENV === 'development') {
+    const storedConfig = localStorage.getItem('dbConfig');
+    if (storedConfig) {
+      return JSON.parse(storedConfig);
+    }
+  }
+  
+  // Fall back to environment variables or defaults
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'password',
+    database: process.env.DB_NAME || 'proposal_db'
+  };
+};
+
+// Function to set development credentials
+export const setDbCredentials = (credentials: {
+  host: string;
+  user: string;
+  password: string;
+  database: string;
+}) => {
+  if (process.env.NODE_ENV === 'development') {
+    localStorage.setItem('dbConfig', JSON.stringify(credentials));
+    console.log('Database credentials stored for development');
+  }
+};
+
 // Connection pool configuration
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'password',
-  database: process.env.DB_NAME || 'proposal_db',
+  ...getDbConfig(),
   waitForConnections: true,
   connectionLimit: 10,
   maxIdle: 10,
@@ -90,4 +118,4 @@ testConnection()
   .then(() => initializeTables())
   .catch(console.error);
 
-export { pool, executeQuery };
+export { pool, executeQuery, testConnection };
