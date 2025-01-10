@@ -42,7 +42,7 @@ export const ProposalFormField = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             {type === "select" && options ? (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder={placeholder} />
@@ -63,6 +63,7 @@ export const ProposalFormField = ({
                 type={type}
                 placeholder={placeholder}
                 {...field}
+                value={field.value?.toString() || ""}
                 onChange={
                   type === "number"
                     ? (e) => field.onChange(Number(e.target.value))

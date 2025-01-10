@@ -21,11 +21,25 @@ export const ProposalTableRow = ({
       {columnVisibility.projectName && <TableCell>{row.projectName}</TableCell>}
       {columnVisibility.priority && <TableCell>{row.priority}</TableCell>}
       {columnVisibility.country && <TableCell>{row.country}</TableCell>}
-      {columnVisibility.status && <TableCell>{row.status}</TableCell>}
+      {columnVisibility.bandwidth && <TableCell>{row.bandwidth}</TableCell>}
+      {columnVisibility.gateway && <TableCell>{row.gateway}</TableCell>}
+      {columnVisibility.terminalCount && <TableCell>{row.terminalCount}</TableCell>}
+      {columnVisibility.terminalType && <TableCell>{row.terminalType}</TableCell>}
       {columnVisibility.customer && <TableCell>{row.customer}</TableCell>}
-      {columnVisibility.salesDirector && (
-        <TableCell>{row.salesDirector}</TableCell>
+      {columnVisibility.salesDirector && <TableCell>{row.salesDirector}</TableCell>}
+      {columnVisibility.submissionDate && <TableCell>{row.submissionDate}</TableCell>}
+      {columnVisibility.proposalLink && (
+        <TableCell>
+          <a href={row.proposalLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+            View Proposal
+          </a>
+        </TableCell>
       )}
+      {columnVisibility.commercialValue && (
+        <TableCell>${row.commercialValue.toLocaleString()}</TableCell>
+      )}
+      {columnVisibility.status && <TableCell>{row.status}</TableCell>}
+      {columnVisibility.remarks && <TableCell>{row.remarks}</TableCell>}
       <TableCell>
         <div className="flex space-x-2">
           <Button variant="ghost" size="icon" onClick={() => onEdit(row)}>

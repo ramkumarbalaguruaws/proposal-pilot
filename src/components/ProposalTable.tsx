@@ -46,9 +46,17 @@ export const ProposalTable = ({
     projectName: true,
     priority: true,
     country: true,
-    status: true,
+    bandwidth: true,
+    gateway: true,
+    terminalCount: true,
+    terminalType: true,
     customer: true,
     salesDirector: true,
+    submissionDate: true,
+    proposalLink: true,
+    commercialValue: true,
+    status: true,
+    remarks: true,
   });
 
   const itemsPerPage = 10;

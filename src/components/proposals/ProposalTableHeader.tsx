@@ -28,10 +28,7 @@ export const ProposalTableHeader = ({
     <TableHeader>
       <TableRow>
         {columnVisibility.projectName && (
-          <TableHead
-            onClick={() => onSort("projectName")}
-            className="cursor-pointer"
-          >
+          <TableHead onClick={() => onSort("projectName")} className="cursor-pointer">
             Project Name <SortIcon field="projectName" />
           </TableHead>
         )}
@@ -45,9 +42,24 @@ export const ProposalTableHeader = ({
             Country <SortIcon field="country" />
           </TableHead>
         )}
-        {columnVisibility.status && (
-          <TableHead onClick={() => onSort("status")} className="cursor-pointer">
-            Status <SortIcon field="status" />
+        {columnVisibility.bandwidth && (
+          <TableHead onClick={() => onSort("bandwidth")} className="cursor-pointer">
+            Bandwidth <SortIcon field="bandwidth" />
+          </TableHead>
+        )}
+        {columnVisibility.gateway && (
+          <TableHead onClick={() => onSort("gateway")} className="cursor-pointer">
+            Gateway <SortIcon field="gateway" />
+          </TableHead>
+        )}
+        {columnVisibility.terminalCount && (
+          <TableHead onClick={() => onSort("terminalCount")} className="cursor-pointer">
+            Terminal Count <SortIcon field="terminalCount" />
+          </TableHead>
+        )}
+        {columnVisibility.terminalType && (
+          <TableHead onClick={() => onSort("terminalType")} className="cursor-pointer">
+            Terminal Type <SortIcon field="terminalType" />
           </TableHead>
         )}
         {columnVisibility.customer && (
@@ -56,11 +68,33 @@ export const ProposalTableHeader = ({
           </TableHead>
         )}
         {columnVisibility.salesDirector && (
-          <TableHead
-            onClick={() => onSort("salesDirector")}
-            className="cursor-pointer"
-          >
+          <TableHead onClick={() => onSort("salesDirector")} className="cursor-pointer">
             Sales Director <SortIcon field="salesDirector" />
+          </TableHead>
+        )}
+        {columnVisibility.submissionDate && (
+          <TableHead onClick={() => onSort("submissionDate")} className="cursor-pointer">
+            Submission Date <SortIcon field="submissionDate" />
+          </TableHead>
+        )}
+        {columnVisibility.proposalLink && (
+          <TableHead onClick={() => onSort("proposalLink")} className="cursor-pointer">
+            Proposal Link <SortIcon field="proposalLink" />
+          </TableHead>
+        )}
+        {columnVisibility.commercialValue && (
+          <TableHead onClick={() => onSort("commercialValue")} className="cursor-pointer">
+            Commercial Value <SortIcon field="commercialValue" />
+          </TableHead>
+        )}
+        {columnVisibility.status && (
+          <TableHead onClick={() => onSort("status")} className="cursor-pointer">
+            Status <SortIcon field="status" />
+          </TableHead>
+        )}
+        {columnVisibility.remarks && (
+          <TableHead onClick={() => onSort("remarks")} className="cursor-pointer">
+            Remarks <SortIcon field="remarks" />
           </TableHead>
         )}
         <TableHead>Actions</TableHead>
