@@ -1,4 +1,8 @@
-import mysql from 'mysql2/promise';
+// Mock data service for development
+const mockData = {
+  proposals: [],
+  users: []
+};
 
 // Get credentials from localStorage for development
 const getDbConfig = () => {
@@ -31,91 +35,68 @@ export const setDbCredentials = (credentials: {
   }
 };
 
-// Connection pool configuration
-const pool = mysql.createPool({
-  ...getDbConfig(),
-  waitForConnections: true,
-  connectionLimit: 10,
-  maxIdle: 10,
-  idleTimeout: 60000,
-  queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
-  ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: true
-  } : undefined
-});
-
-// Test database connection
+// Mock connection test
 const testConnection = async () => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Mock database connection successful');
+    return true;
+  }
+  
   try {
-    const connection = await pool.getConnection();
+    const response = await fetch('/api/test-connection', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(getDbConfig())
+    });
+    
+    if (!response.ok) {
+      throw new Error('Database connection failed');
+    }
+    
     console.log('Database connection successful');
-    connection.release();
+    return true;
   } catch (error) {
     console.error('Error connecting to database:', error);
     throw error;
   }
 };
 
-// Initialize database tables
-const initializeTables = async () => {
-  try {
-    // Create proposals table
-    await pool.execute(`
-      CREATE TABLE IF NOT EXISTS proposals (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        projectName VARCHAR(255) NOT NULL,
-        priority VARCHAR(50),
-        country VARCHAR(100),
-        bandwidth VARCHAR(100),
-        gateway VARCHAR(100),
-        terminalCount INT,
-        terminalType VARCHAR(100),
-        customer VARCHAR(255),
-        salesDirector VARCHAR(255),
-        submissionDate DATE,
-        proposalLink VARCHAR(512),
-        commercialValue DECIMAL(15,2),
-        status VARCHAR(50),
-        remarks TEXT,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Create users table
-    await pool.execute(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        role VARCHAR(50) NOT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    console.log('Database tables initialized successfully');
-  } catch (error) {
-    console.error('Error initializing database tables:', error);
-    throw error;
-  }
-};
-
-// Generic query executor
+// Mock query executor
 const executeQuery = async (query: string, params?: any[]) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Mock query executed:', query, params);
+    return [];
+  }
+
   try {
-    const [results] = await pool.execute(query, params);
-    return results;
+    const response = await fetch('/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query,
+        params,
+        ...getDbConfig()
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Query execution failed');
+    }
+
+    return await response.json();
   } catch (error) {
     console.error('Error executing query:', error);
     throw error;
   }
 };
 
-// Initialize database on application start
-testConnection()
-  .then(() => initializeTables())
-  .catch(console.error);
+// Initialize mock data
+if (process.env.NODE_ENV === 'development') {
+  console.log('Mock database initialized');
+}
 
-export { pool, executeQuery, testConnection };
+export { executeQuery, testConnection };
