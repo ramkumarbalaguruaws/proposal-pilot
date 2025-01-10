@@ -14,11 +14,17 @@ const Dashboard = () => {
     <Layout>
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-6">
+        
+        {/* Database Credentials Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Database Configuration</CardTitle>
+          </CardHeader>
+          <CardContent>
             <DbCredentialsManager />
-          </div>
-        )}
+          </CardContent>
+        </Card>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Card>
             <CardHeader>
