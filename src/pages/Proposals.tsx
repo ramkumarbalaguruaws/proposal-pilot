@@ -10,29 +10,64 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const mockData: Proposal[] = [
+// Dummy data with realistic proposal examples
+const initialProposals: Proposal[] = [
   {
     id: 1,
-    projectName: "Project Alpha",
+    projectName: "Global Satellite Network Expansion",
     priority: "P1",
-    country: "USA",
-    bandwidth: "100MHz",
-    gateway: "GW-1",
-    terminalCount: 100,
-    terminalType: "Type-A",
-    customer: "Customer 1",
-    salesDirector: "John Doe",
-    submissionDate: "2024-02-20",
-    proposalLink: "https://example.com",
-    commercialValue: 1000000,
+    country: "United States",
+    bandwidth: "500 MHz",
+    gateway: "GW-NAM-01",
+    terminalCount: 1500,
+    terminalType: "VSATs",
+    customer: "TechCorp International",
+    salesDirector: "Sarah Johnson",
+    submissionDate: "2024-01-15",
+    proposalLink: "https://proposals.example.com/gne-2024",
+    commercialValue: 2500000,
     status: "ongoing",
-    remarks: "In progress",
+    remarks: "Awaiting final technical review",
   },
+  {
+    id: 2,
+    projectName: "Maritime Connectivity Solution",
+    priority: "P2",
+    country: "Singapore",
+    bandwidth: "200 MHz",
+    gateway: "GW-APAC-03",
+    terminalCount: 750,
+    terminalType: "Maritime Terminals",
+    customer: "Ocean Shipping Co",
+    salesDirector: "Michael Chen",
+    submissionDate: "2024-01-20",
+    proposalLink: "https://proposals.example.com/mcs-2024",
+    commercialValue: 1200000,
+    status: "ongoing",
+    remarks: "Client requested additional coverage details",
+  },
+  {
+    id: 3,
+    projectName: "Rural Broadband Initiative",
+    priority: "P1",
+    country: "Brazil",
+    bandwidth: "300 MHz",
+    gateway: "GW-SAM-02",
+    terminalCount: 2000,
+    terminalType: "Consumer Terminals",
+    customer: "ConnectBR",
+    salesDirector: "Ana Silva",
+    submissionDate: "2024-01-10",
+    proposalLink: "https://proposals.example.com/rbi-2024",
+    commercialValue: 3000000,
+    status: "blocked",
+    remarks: "Pending regulatory approval",
+  }
 ];
 
 const Proposals = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [proposals, setProposals] = useState<Proposal[]>(mockData);
+  const [proposals, setProposals] = useState<Proposal[]>(initialProposals);
   const [editingProposal, setEditingProposal] = useState<Proposal | undefined>();
 
   const handleSubmit = (data: Partial<Proposal>) => {
