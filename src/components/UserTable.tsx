@@ -12,31 +12,71 @@ import { useState } from "react";
 import { UserDialog } from "./UserDialog";
 import { User } from "@/types/user";
 import { useToast } from "@/components/ui/use-toast";
-
-const mockData: User[] = [
-  {
-    id: 1,
-    username: "admin",
-    role: "admin",
-    email: "admin@example.com",
-    createdAt: "2024-01-01",
-    lastLogin: "2024-03-14",
-  },
-  {
-    id: 2,
-    username: "user1",
-    role: "user",
-    email: "user1@example.com",
-    createdAt: "2024-02-15",
-    lastLogin: "2024-03-13",
-  },
-];
+import { executeQuery } from "@/utils/db";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const UserTable = () => {
-  const [users, setUsers] = useState<User[]>(mockData);
   const [selectedUser, setSelectedUser] = useState<User | undefined>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch users
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const result = await executeQuery('SELECT * FROM users');
+      return result as User[];
+    },
+  });
+
+  // Create user mutation
+  const createUserMutation = useMutation({
+    mutationFn: async (userData: Partial<User>) => {
+      await executeQuery(
+        'INSERT INTO users (username, email, role, created_at) VALUES (?, ?, ?, ?)',
+        [userData.username, userData.email, userData.role, new Date().toISOString()]
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast({
+        title: "User created",
+        description: "The new user has been successfully created.",
+      });
+    },
+  });
+
+  // Update user mutation
+  const updateUserMutation = useMutation({
+    mutationFn: async (userData: User) => {
+      await executeQuery(
+        'UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?',
+        [userData.username, userData.email, userData.role, userData.id]
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast({
+        title: "User updated",
+        description: "The user has been successfully updated.",
+      });
+    },
+  });
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      await executeQuery('DELETE FROM users WHERE id = ?', [userId]);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast({
+        title: "User deleted",
+        description: "The user has been successfully deleted.",
+      });
+    },
+  });
 
   const handleCreateUser = () => {
     setSelectedUser(undefined);
@@ -49,41 +89,21 @@ export const UserTable = () => {
   };
 
   const handleDeleteUser = (userId: number) => {
-    setUsers(users.filter((user) => user.id !== userId));
-    toast({
-      title: "User deleted",
-      description: "The user has been successfully deleted.",
-    });
+    deleteUserMutation.mutate(userId);
   };
 
   const handleSaveUser = (userData: Partial<User>) => {
     if (selectedUser) {
-      // Edit existing user
-      setUsers(
-        users.map((user) =>
-          user.id === selectedUser.id ? { ...user, ...userData } : user
-        )
-      );
-      toast({
-        title: "User updated",
-        description: "The user has been successfully updated.",
-      });
+      updateUserMutation.mutate({ ...selectedUser, ...userData });
     } else {
-      // Create new user
-      const newUser: User = {
-        id: Math.max(...users.map((u) => u.id)) + 1,
-        username: userData.username!,
-        email: userData.email!,
-        role: userData.role!,
-        createdAt: new Date().toISOString().split("T")[0],
-      };
-      setUsers([...users, newUser]);
-      toast({
-        title: "User created",
-        description: "The new user has been successfully created.",
-      });
+      createUserMutation.mutate(userData);
     }
+    setDialogOpen(false);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-4">
