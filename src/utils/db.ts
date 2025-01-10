@@ -1,11 +1,11 @@
 import mysql from 'mysql2/promise';
 
-// Create a connection pool
+// Create a connection pool using environment variables
 const pool = mysql.createPool({
-  host: 'your-aws-rds-endpoint',
-  user: 'your-username',
-  password: 'your-password',
-  database: 'your-database-name',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true
   },
