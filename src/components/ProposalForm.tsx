@@ -1,17 +1,9 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
+import { ProposalFormField } from "./proposals/ProposalFormField";
 import type { Proposal } from "./ProposalTable";
 
 interface ProposalFormProps {
@@ -20,7 +12,11 @@ interface ProposalFormProps {
   editingProposal?: Proposal;
 }
 
-export const ProposalForm = ({ onClose, onSubmit, editingProposal }: ProposalFormProps) => {
+export const ProposalForm = ({
+  onClose,
+  onSubmit,
+  editingProposal,
+}: ProposalFormProps) => {
   const { toast } = useToast();
   const form = useForm<Partial<Proposal>>({
     defaultValues: editingProposal || {
@@ -64,202 +60,105 @@ export const ProposalForm = ({ onClose, onSubmit, editingProposal }: ProposalFor
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="projectName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter project name" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Project Name"
+            placeholder="Enter project name"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="priority"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priority</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="P1">P1</SelectItem>
-                    <SelectItem value="P2">P2</SelectItem>
-                    <SelectItem value="P3">P3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
+            label="Priority"
+            type="select"
+            placeholder="Select priority"
+            options={[
+              { value: "P1", label: "P1" },
+              { value: "P2", label: "P2" },
+              { value: "P3", label: "P3" },
+            ]}
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="country"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Country</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter country" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Country"
+            placeholder="Enter country"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="bandwidth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bandwidth</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter bandwidth" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Bandwidth"
+            placeholder="Enter bandwidth"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="gateway"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gateway</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter gateway" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Gateway"
+            placeholder="Enter gateway"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="terminalCount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Terminal Count</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter terminal count"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Terminal Count"
+            type="number"
+            placeholder="Enter terminal count"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="terminalType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Terminal Type</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter terminal type" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Terminal Type"
+            placeholder="Enter terminal type"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="customer"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Customer</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter customer name" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Customer"
+            placeholder="Enter customer name"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="salesDirector"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Sales Director</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter sales director name" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Sales Director"
+            placeholder="Enter sales director name"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="submissionDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Submission Date</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Submission Date"
+            type="date"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="proposalLink"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Proposal Link</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter proposal link" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Proposal Link"
+            placeholder="Enter proposal link"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="commercialValue"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Commercial Value</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter commercial value"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+            label="Commercial Value"
+            type="number"
+            placeholder="Enter commercial value"
           />
-          <FormField
-            control={form.control}
+          <ProposalFormField
+            form={form}
             name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="ongoing">Ongoing</SelectItem>
-                    <SelectItem value="blocked">Blocked</SelectItem>
-                    <SelectItem value="closed">Closed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
+            label="Status"
+            type="select"
+            placeholder="Select status"
+            options={[
+              { value: "ongoing", label: "Ongoing" },
+              { value: "blocked", label: "Blocked" },
+              { value: "closed", label: "Closed" },
+            ]}
           />
         </div>
-        <FormField
-          control={form.control}
+        <ProposalFormField
+          form={form}
           name="remarks"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Remarks</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Enter remarks" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
+          label="Remarks"
+          type="textarea"
+          placeholder="Enter remarks"
         />
         <div className="flex justify-end space-x-2">
           <Button variant="outline" onClick={onClose}>
