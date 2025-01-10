@@ -1,7 +1,4 @@
-import mysql from 'mysql2/promise';
 import { dbConfig } from '../config/environment';
-
-let connection: mysql.Connection | null = null;
 
 interface DbCredentials {
   host: string;
@@ -19,24 +16,31 @@ export const setDbCredentials = (credentials: DbCredentials) => {
   localStorage.setItem('dbPort', credentials.port.toString());
 };
 
-export const getConnection = async () => {
-  if (!connection) {
-    connection = await mysql.createConnection({
-      host: dbConfig.host,
-      user: dbConfig.user,
-      password: dbConfig.password,
-      database: dbConfig.database,
-      port: dbConfig.port,
-    });
-  }
-  return connection;
-};
-
 export const executeQuery = async (query: string, params: any[] = []) => {
   try {
-    const conn = await getConnection();
-    const [results] = await conn.execute(query, params);
-    return results;
+    const response = await fetch('/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        params,
+        credentials: {
+          host: dbConfig.host,
+          user: dbConfig.user,
+          password: dbConfig.password,
+          database: dbConfig.database,
+          port: dbConfig.port,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return await response.json();
   } catch (error) {
     console.error('Database error:', error);
     throw error;
