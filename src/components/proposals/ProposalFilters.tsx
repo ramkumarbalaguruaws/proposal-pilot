@@ -1,6 +1,4 @@
-import { Filter, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,10 +9,11 @@ import {
 } from "@/components/ui/select";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Download, View } from "lucide-react";
 import type { ColumnVisibility } from "../ProposalTable";
 
 interface ProposalFiltersProps {
@@ -25,7 +24,12 @@ interface ProposalFiltersProps {
   priorityFilter: string;
   setPriorityFilter: (value: string) => void;
   columnVisibility: ColumnVisibility;
-  setColumnVisibility: (value: ColumnVisibility) => void;
+  setColumnVisibility: (value: Record<string, boolean>) => void;
+  startDate: string;
+  setStartDate: (value: string) => void;
+  endDate: string;
+  setEndDate: (value: string) => void;
+  onExportCSV: () => void;
 }
 
 export const ProposalFilters = ({
@@ -37,55 +41,27 @@ export const ProposalFilters = ({
   setPriorityFilter,
   columnVisibility,
   setColumnVisibility,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  onExportCSV,
 }: ProposalFiltersProps) => {
   return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-medium">Filters</h3>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="ml-auto">
-              <Settings2 className="h-4 w-4 mr-2" />
-              View
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {Object.entries(columnVisibility).map(([key, value]) => (
-              <DropdownMenuCheckboxItem
-                key={key}
-                className="capitalize"
-                checked={value}
-                onCheckedChange={(checked) =>
-                  setColumnVisibility({
-                    ...columnVisibility,
-                    [key]: checked,
-                  })
-                }
-              >
-                {key.replace(/([A-Z])/g, " $1").trim()}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            placeholder="Search projects, customers, or sales directors..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full"
-          />
-        </div>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-4">
+        <Input
+          placeholder="Search proposals..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-[250px]"
+        />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="ongoing">Ongoing</SelectItem>
             <SelectItem value="blocked">Blocked</SelectItem>
             <SelectItem value="closed">Closed</SelectItem>
@@ -96,13 +72,54 @@ export const ProposalFilters = ({
             <SelectValue placeholder="Filter by priority" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Priorities</SelectItem>
+            <SelectItem value="all">All Priority</SelectItem>
             <SelectItem value="P1">P1</SelectItem>
             <SelectItem value="P2">P2</SelectItem>
             <SelectItem value="P3">P3</SelectItem>
           </SelectContent>
         </Select>
+        <Input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="w-[180px]"
+        />
+        <Input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="w-[180px]"
+        />
       </div>
-    </Card>
+      <div className="flex justify-between">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <View className="mr-2 h-4 w-4" />
+              View
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {Object.entries(columnVisibility).map(([key, value]) => (
+              <DropdownMenuCheckboxItem
+                key={key}
+                checked={value}
+                onCheckedChange={(checked) =>
+                  setColumnVisibility((prev) => ({ ...prev, [key]: checked }))
+                }
+              >
+                {key
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, (str) => str.toUpperCase())}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button variant="outline" onClick={onExportCSV}>
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
+        </Button>
+      </div>
+    </div>
   );
 };

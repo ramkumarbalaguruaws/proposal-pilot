@@ -3,14 +3,15 @@ import { Layout } from "@/components/Layout";
 import { ProposalTable, type Proposal } from "@/components/ProposalTable";
 import { Button } from "@/components/ui/button";
 import { ProposalForm } from "@/components/ProposalForm";
+import { ProposalSummary } from "@/components/proposals/ProposalSummary";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
-// Dummy data with realistic proposal examples
 const initialProposals: Proposal[] = [
   {
     id: 1,
@@ -66,19 +67,20 @@ const initialProposals: Proposal[] = [
 ];
 
 const Proposals = () => {
+  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [proposals, setProposals] = useState<Proposal[]>(initialProposals);
   const [editingProposal, setEditingProposal] = useState<Proposal | undefined>();
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handleSubmit = (data: Partial<Proposal>) => {
     if (editingProposal) {
-      // Update existing proposal
       setProposals(proposals.map(p => 
         p.id === editingProposal.id ? { ...p, ...data } : p
       ));
       setEditingProposal(undefined);
     } else {
-      // Create new proposal
       const newProposal = {
         ...data,
         id: Math.max(0, ...proposals.map(p => p.id)) + 1,
@@ -102,6 +104,58 @@ const Proposals = () => {
     setEditingProposal(undefined);
   };
 
+  const handleExportCSV = () => {
+    const headers = [
+      "Project Name",
+      "Priority",
+      "Country",
+      "Bandwidth",
+      "Gateway",
+      "Terminal Count",
+      "Terminal Type",
+      "Customer",
+      "Sales Director",
+      "Submission Date",
+      "Commercial Value",
+      "Status",
+      "Remarks",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...proposals.map((p) =>
+        [
+          p.projectName,
+          p.priority,
+          p.country,
+          p.bandwidth,
+          p.gateway,
+          p.terminalCount,
+          p.terminalType,
+          p.customer,
+          p.salesDirector,
+          p.submissionDate,
+          p.commercialValue,
+          p.status,
+          p.remarks,
+        ]
+          .map((value) => `"${value}"`)
+          .join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "proposals.csv";
+    link.click();
+
+    toast({
+      title: "Export Successful",
+      description: "The proposals have been exported to CSV.",
+    });
+  };
+
   return (
     <Layout>
       <div className="p-6">
@@ -109,11 +163,20 @@ const Proposals = () => {
           <h1 className="text-3xl font-bold">Proposals</h1>
           <Button onClick={() => setIsDialogOpen(true)}>Add New Proposal</Button>
         </div>
+
+        <ProposalSummary proposals={proposals} />
+        
         <ProposalTable 
           proposals={proposals}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          onExportCSV={handleExportCSV}
         />
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-3xl">
             <DialogHeader>

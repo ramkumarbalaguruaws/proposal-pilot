@@ -45,12 +45,22 @@ interface ProposalTableProps {
   proposals: Proposal[];
   onEdit: (proposal: Proposal) => void;
   onDelete: (id: number) => void;
+  startDate: string;
+  endDate: string;
+  setStartDate: (date: string) => void;
+  setEndDate: (date: string) => void;
+  onExportCSV: () => void;
 }
 
 export const ProposalTable = ({
   proposals,
   onEdit,
   onDelete,
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
+  onExportCSV,
 }: ProposalTableProps) => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
@@ -119,7 +129,13 @@ export const ProposalTable = ({
         statusFilter === "all" || proposal.status === statusFilter;
       const matchesPriority =
         priorityFilter === "all" || proposal.priority === priorityFilter;
-      return matchesSearch && matchesStatus && matchesPriority;
+      const matchesDateRange =
+        (!startDate ||
+          new Date(proposal.submissionDate) >= new Date(startDate)) &&
+        (!endDate || new Date(proposal.submissionDate) <= new Date(endDate));
+      return (
+        matchesSearch && matchesStatus && matchesPriority && matchesDateRange
+      );
     })
     .sort((a, b) => {
       const aValue = a[sortField];
@@ -145,6 +161,11 @@ export const ProposalTable = ({
         setPriorityFilter={setPriorityFilter}
         columnVisibility={columnVisibility}
         setColumnVisibility={setColumnVisibility}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        onExportCSV={onExportCSV}
       />
 
       <div className="border rounded-lg">
