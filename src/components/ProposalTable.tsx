@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, ChevronUp, ChevronDown, Filter } from "lucide-react";
+import { Edit, Trash2, ChevronUp, ChevronDown, Filter, Settings2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
@@ -27,6 +27,12 @@ import {
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export type Proposal = {
   id: number;
@@ -61,6 +67,16 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Column visibility state
+  const [columnVisibility, setColumnVisibility] = useState({
+    projectName: true,
+    priority: true,
+    country: true,
+    status: true,
+    customer: true,
+    salesDirector: true,
+  });
 
   const handleDelete = (id: number) => {
     if (window.confirm("Are you sure you want to delete this proposal?")) {
@@ -117,9 +133,33 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
   return (
     <div className="space-y-4">
       <Card className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-medium">Filters</h3>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <h3 className="font-medium">Filters</h3>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="ml-auto">
+                <Settings2 className="h-4 w-4 mr-2" />
+                View
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {Object.entries(columnVisibility).map(([key, value]) => (
+                <DropdownMenuCheckboxItem
+                  key={key}
+                  className="capitalize"
+                  checked={value}
+                  onCheckedChange={(checked) =>
+                    setColumnVisibility((prev) => ({ ...prev, [key]: checked }))
+                  }
+                >
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -137,8 +177,8 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="ongoing">Ongoing</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="blocked">Blocked</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
             </SelectContent>
           </Select>
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
@@ -159,36 +199,48 @@ export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProp
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead onClick={() => handleSort("projectName")} className="cursor-pointer">
-                Project Name <SortIcon field="projectName" />
-              </TableHead>
-              <TableHead onClick={() => handleSort("priority")} className="cursor-pointer">
-                Priority <SortIcon field="priority" />
-              </TableHead>
-              <TableHead onClick={() => handleSort("country")} className="cursor-pointer">
-                Country <SortIcon field="country" />
-              </TableHead>
-              <TableHead onClick={() => handleSort("status")} className="cursor-pointer">
-                Status <SortIcon field="status" />
-              </TableHead>
-              <TableHead onClick={() => handleSort("customer")} className="cursor-pointer">
-                Customer <SortIcon field="customer" />
-              </TableHead>
-              <TableHead onClick={() => handleSort("salesDirector")} className="cursor-pointer">
-                Sales Director <SortIcon field="salesDirector" />
-              </TableHead>
+              {columnVisibility.projectName && (
+                <TableHead onClick={() => handleSort("projectName")} className="cursor-pointer">
+                  Project Name <SortIcon field="projectName" />
+                </TableHead>
+              )}
+              {columnVisibility.priority && (
+                <TableHead onClick={() => handleSort("priority")} className="cursor-pointer">
+                  Priority <SortIcon field="priority" />
+                </TableHead>
+              )}
+              {columnVisibility.country && (
+                <TableHead onClick={() => handleSort("country")} className="cursor-pointer">
+                  Country <SortIcon field="country" />
+                </TableHead>
+              )}
+              {columnVisibility.status && (
+                <TableHead onClick={() => handleSort("status")} className="cursor-pointer">
+                  Status <SortIcon field="status" />
+                </TableHead>
+              )}
+              {columnVisibility.customer && (
+                <TableHead onClick={() => handleSort("customer")} className="cursor-pointer">
+                  Customer <SortIcon field="customer" />
+                </TableHead>
+              )}
+              {columnVisibility.salesDirector && (
+                <TableHead onClick={() => handleSort("salesDirector")} className="cursor-pointer">
+                  Sales Director <SortIcon field="salesDirector" />
+                </TableHead>
+              )}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedProposals.map((row) => (
               <TableRow key={row.id}>
-                <TableCell>{row.projectName}</TableCell>
-                <TableCell>{row.priority}</TableCell>
-                <TableCell>{row.country}</TableCell>
-                <TableCell>{row.status}</TableCell>
-                <TableCell>{row.customer}</TableCell>
-                <TableCell>{row.salesDirector}</TableCell>
+                {columnVisibility.projectName && <TableCell>{row.projectName}</TableCell>}
+                {columnVisibility.priority && <TableCell>{row.priority}</TableCell>}
+                {columnVisibility.country && <TableCell>{row.country}</TableCell>}
+                {columnVisibility.status && <TableCell>{row.status}</TableCell>}
+                {columnVisibility.customer && <TableCell>{row.customer}</TableCell>}
+                {columnVisibility.salesDirector && <TableCell>{row.salesDirector}</TableCell>}
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button variant="ghost" size="icon" onClick={() => onEdit(row)}>
