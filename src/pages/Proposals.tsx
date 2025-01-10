@@ -11,86 +11,53 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-
-const initialProposals: Proposal[] = [
-  {
-    id: 1,
-    projectName: "Global Satellite Network Expansion",
-    priority: "P1",
-    country: "United States",
-    bandwidth: "500 MHz",
-    gateway: "GW-NAM-01",
-    terminalCount: 1500,
-    terminalType: "VSATs",
-    customer: "TechCorp International",
-    salesDirector: "Sarah Johnson",
-    submissionDate: "2024-01-15",
-    proposalLink: "https://proposals.example.com/gne-2024",
-    commercialValue: 2500000,
-    status: "ongoing",
-    remarks: "Awaiting final technical review",
-    user_id: 1
-  },
-  {
-    id: 2,
-    projectName: "Maritime Connectivity Solution",
-    priority: "P2",
-    country: "Singapore",
-    bandwidth: "200 MHz",
-    gateway: "GW-APAC-03",
-    terminalCount: 750,
-    terminalType: "Maritime Terminals",
-    customer: "Ocean Shipping Co",
-    salesDirector: "Michael Chen",
-    submissionDate: "2024-01-20",
-    proposalLink: "https://proposals.example.com/mcs-2024",
-    commercialValue: 1200000,
-    status: "ongoing",
-    remarks: "Client requested additional coverage details",
-    user_id: 2
-  },
-  {
-    id: 3,
-    projectName: "Rural Broadband Initiative",
-    priority: "P1",
-    country: "Brazil",
-    bandwidth: "300 MHz",
-    gateway: "GW-SAM-02",
-    terminalCount: 2000,
-    terminalType: "Consumer Terminals",
-    customer: "ConnectBR",
-    salesDirector: "Ana Silva",
-    submissionDate: "2024-01-10",
-    proposalLink: "https://proposals.example.com/rbi-2024",
-    commercialValue: 3000000,
-    status: "blocked",
-    remarks: "Pending regulatory approval",
-    user_id: 3
-  }
-];
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { executeQuery } from "@/utils/db";
 
 const Proposals = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [proposals, setProposals] = useState<Proposal[]>(initialProposals);
   const [editingProposal, setEditingProposal] = useState<Proposal | undefined>();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const handleSubmit = (data: Partial<Proposal>) => {
-    if (editingProposal) {
-      setProposals(proposals.map(p => 
-        p.id === editingProposal.id ? { ...p, ...data } : p
-      ));
+  const { data: proposals = [], isLoading } = useQuery({
+    queryKey: ['proposals'],
+    queryFn: async () => {
+      const result = await executeQuery('SELECT * FROM proposals');
+      return result as Proposal[];
+    },
+  });
+
+  const handleSubmit = async (data: Partial<Proposal>) => {
+    try {
+      if (editingProposal) {
+        await executeQuery(
+          'UPDATE proposals SET ? WHERE id = ?',
+          [data, editingProposal.id]
+        );
+        toast({
+          title: "Success",
+          description: "Proposal updated successfully",
+        });
+      } else {
+        await executeQuery('INSERT INTO proposals SET ?', [data]);
+        toast({
+          title: "Success",
+          description: "Proposal created successfully",
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      setIsDialogOpen(false);
       setEditingProposal(undefined);
-    } else {
-      const newProposal = {
-        ...data,
-        id: Math.max(0, ...proposals.map(p => p.id)) + 1,
-      } as Proposal;
-      setProposals([...proposals, newProposal]);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save proposal",
+      });
     }
-    setIsDialogOpen(false);
   };
 
   const handleEdit = (proposal: Proposal) => {
@@ -98,8 +65,21 @@ const Proposals = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    setProposals(proposals.filter(p => p.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await executeQuery('DELETE FROM proposals WHERE id = ?', [id]);
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      toast({
+        title: "Success",
+        description: "Proposal deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete proposal",
+      });
+    }
   };
 
   const handleClose = () => {
@@ -158,6 +138,18 @@ const Proposals = () => {
       description: "The proposals have been exported to CSV.",
     });
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto p-6">
+          <div className="flex justify-center items-center h-[60vh]">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
