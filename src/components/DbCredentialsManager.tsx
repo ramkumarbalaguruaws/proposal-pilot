@@ -9,40 +9,55 @@ export const DbCredentialsManager = () => {
     host: '',
     user: '',
     password: '',
-    database: ''
+    database: '',
+    port: '3306'  // Default MySQL port
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setDbCredentials(credentials);
-    toast.success("Database credentials saved");
+    toast.success("Database credentials saved successfully");
   };
 
-  return process.env.NODE_ENV === 'development' ? (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
-      <h3 className="text-lg font-semibold">Database Credentials (Development Only)</h3>
-      <Input
-        placeholder="Host"
-        value={credentials.host}
-        onChange={(e) => setCredentials(prev => ({ ...prev, host: e.target.value }))}
-      />
-      <Input
-        placeholder="User"
-        value={credentials.user}
-        onChange={(e) => setCredentials(prev => ({ ...prev, user: e.target.value }))}
-      />
-      <Input
-        type="password"
-        placeholder="Password"
-        value={credentials.password}
-        onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-      />
-      <Input
-        placeholder="Database"
-        value={credentials.database}
-        onChange={(e) => setCredentials(prev => ({ ...prev, database: e.target.value }))}
-      />
-      <Button type="submit">Save Credentials</Button>
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 p-6 border rounded-lg bg-white shadow-sm max-w-md mx-auto my-4">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">AWS RDS Database Credentials</h3>
+        <p className="text-sm text-gray-500">Enter your AWS RDS MySQL credentials below. These will be stored securely in localStorage.</p>
+      </div>
+      <div className="space-y-4">
+        <Input
+          placeholder="Host (e.g., mydb.123456789012.region.rds.amazonaws.com)"
+          value={credentials.host}
+          onChange={(e) => setCredentials(prev => ({ ...prev, host: e.target.value }))}
+        />
+        <Input
+          placeholder="Username"
+          value={credentials.user}
+          onChange={(e) => setCredentials(prev => ({ ...prev, user: e.target.value }))}
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={credentials.password}
+          onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+        />
+        <Input
+          placeholder="Database name"
+          value={credentials.database}
+          onChange={(e) => setCredentials(prev => ({ ...prev, database: e.target.value }))}
+        />
+        <Input
+          placeholder="Port (default: 3306)"
+          value={credentials.port}
+          onChange={(e) => setCredentials(prev => ({ ...prev, port: e.target.value }))}
+        />
+      </div>
+      <Button type="submit" className="w-full">Save Credentials</Button>
+      <p className="text-xs text-gray-400 text-center">
+        Credentials are stored in localStorage for development purposes only.
+        For production, use environment variables or AWS Secrets Manager.
+      </p>
     </form>
-  ) : null;
+  );
 };
