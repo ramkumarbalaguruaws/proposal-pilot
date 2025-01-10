@@ -187,6 +187,9 @@ const executeQuery = async (query: string, params?: any[]) => {
     if (query.toLowerCase().includes('proposals')) {
       return mockData.proposals;
     }
+    if (query.toLowerCase().includes('users')) {
+      return mockData.users;
+    }
     return [];
   }
 
