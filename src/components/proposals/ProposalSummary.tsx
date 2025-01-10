@@ -23,34 +23,55 @@ export const ProposalSummary = ({ proposals }: ProposalSummaryProps) => {
   }));
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Total Proposals</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Proposals</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">{proposals.length}</p>
+          <div className="text-2xl font-bold">{proposals.length}</div>
         </CardContent>
       </Card>
+
       <Card>
-        <CardHeader>
-          <CardTitle>Total Commercial Value</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total Value</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">
+          <div className="text-2xl font-bold">
             ${totalValue.toLocaleString()}
-          </p>
+          </div>
         </CardContent>
       </Card>
-      <Card className="md:col-span-2 lg:col-span-1">
-        <CardHeader>
-          <CardTitle>Proposals by Status</CardTitle>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Status Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <BarChart width={300} height={200} data={statusData}>
+          <div className="space-y-1">
+            <div className="text-sm">
+              Ongoing: {statusCount['ongoing'] || 0}
+            </div>
+            <div className="text-sm">
+              Blocked: {statusCount['blocked'] || 0}
+            </div>
+            <div className="text-sm">
+              Closed: {statusCount['closed'] || 0}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Status Distribution</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BarChart width={200} height={100} data={statusData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
+            <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+            <YAxis tick={{ fontSize: 10 }} />
             <Tooltip />
             <Bar dataKey="value" fill="#4f46e5" />
           </BarChart>
