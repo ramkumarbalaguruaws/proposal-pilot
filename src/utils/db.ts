@@ -87,10 +87,34 @@ const mockData = {
       remarks: "Technical assessment in progress",
     }
   ],
-  users: []
+  users: [
+    {
+      id: 1,
+      username: "johndoe",
+      email: "john@example.com",
+      role: "admin",
+      createdAt: "2024-01-01T00:00:00Z",
+      lastLogin: "2024-01-10T15:30:00Z"
+    },
+    {
+      id: 2,
+      username: "janesmith",
+      email: "jane@example.com",
+      role: "user",
+      createdAt: "2024-01-02T00:00:00Z",
+      lastLogin: "2024-01-09T12:45:00Z"
+    },
+    {
+      id: 3,
+      username: "bobwilson",
+      email: "bob@example.com",
+      role: "user",
+      createdAt: "2024-01-03T00:00:00Z",
+      lastLogin: null
+    }
+  ]
 };
 
-// Get credentials from environment variables or localStorage for development
 const getDbConfig = () => {
   if (process.env.NODE_ENV === 'development') {
     const storedConfig = localStorage.getItem('dbConfig');
