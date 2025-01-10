@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,28 +9,45 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
-const mockData = [
-  {
-    id: 1,
-    projectName: "Project Alpha",
-    priority: "P1",
-    country: "USA",
-    bandwidth: "100MHz",
-    gateway: "GW-1",
-    terminalCount: 100,
-    terminalType: "Type-A",
-    customer: "Customer 1",
-    salesDirector: "John Doe",
-    submissionDate: "2024-02-20",
-    proposalLink: "https://example.com",
-    commercialValue: 1000000,
-    status: "ongoing",
-    remarks: "In progress",
-  },
-];
+export type Proposal = {
+  id: number;
+  projectName: string;
+  priority: string;
+  country: string;
+  bandwidth: string;
+  gateway: string;
+  terminalCount: number;
+  terminalType: string;
+  customer: string;
+  salesDirector: string;
+  submissionDate: string;
+  proposalLink: string;
+  commercialValue: number;
+  status: string;
+  remarks: string;
+};
 
-export const ProposalTable = () => {
+interface ProposalTableProps {
+  proposals: Proposal[];
+  onEdit: (proposal: Proposal) => void;
+  onDelete: (id: number) => void;
+}
+
+export const ProposalTable = ({ proposals, onEdit, onDelete }: ProposalTableProps) => {
+  const { toast } = useToast();
+  
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this proposal?")) {
+      onDelete(id);
+      toast({
+        title: "Proposal deleted",
+        description: "The proposal has been successfully deleted.",
+      });
+    }
+  };
+
   return (
     <div className="border rounded-lg">
       <Table>
@@ -45,7 +63,7 @@ export const ProposalTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {mockData.map((row) => (
+          {proposals.map((row) => (
             <TableRow key={row.id}>
               <TableCell>{row.projectName}</TableCell>
               <TableCell>{row.priority}</TableCell>
@@ -55,10 +73,10 @@ export const ProposalTable = () => {
               <TableCell>{row.salesDirector}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(row)}>
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(row.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
