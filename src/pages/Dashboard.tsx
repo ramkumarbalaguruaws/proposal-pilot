@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProposalSummary } from "@/components/proposals/ProposalSummary";
-import { ProposalFilters } from "@/components/proposals/ProposalFilters";
+import { DashboardFilters, type FilterState } from "@/components/dashboard/DashboardFilters";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useQuery } from "@tanstack/react-query";
@@ -9,26 +9,12 @@ import { executeQuery } from "@/utils/db";
 import type { Proposal } from "@/components/ProposalTable";
 
 const Dashboard = () => {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [columnVisibility, setColumnVisibility] = useState({
-    projectName: true,
-    priority: true,
-    country: true,
-    bandwidth: true,
-    gateway: true,
-    terminalCount: true,
-    terminalType: true,
-    customer: true,
-    salesDirector: true,
-    submissionDate: true,
-    proposalLink: true,
-    commercialValue: true,
-    status: true,
-    remarks: true,
+  const [filters, setFilters] = useState<FilterState>({
+    startDate: undefined,
+    endDate: undefined,
+    salesDirector: "all",
+    country: "all",
+    user: "all",
   });
 
   const { data: proposals = [] } = useQuery({
@@ -39,10 +25,18 @@ const Dashboard = () => {
     },
   });
 
-  const onExportCSV = () => {
-    // CSV export functionality will be implemented later
-    console.log("Export to CSV");
-  };
+  const filteredProposals = proposals.filter((proposal) => {
+    const matchesDate =
+      (!filters.startDate || new Date(proposal.submissionDate) >= filters.startDate) &&
+      (!filters.endDate || new Date(proposal.submissionDate) <= filters.endDate);
+    const matchesSalesDirector =
+      filters.salesDirector === "all" || proposal.salesDirector === filters.salesDirector;
+    const matchesCountry =
+      filters.country === "all" || proposal.country === filters.country;
+    // User filter can be implemented based on your user management system
+    
+    return matchesDate && matchesSalesDirector && matchesCountry;
+  });
 
   return (
     <Layout>
@@ -53,7 +47,7 @@ const Dashboard = () => {
 
         {/* Summary Section */}
         <section className="mb-8">
-          <ProposalSummary proposals={proposals} />
+          <ProposalSummary proposals={filteredProposals} />
         </section>
 
         {/* Filters Section */}
@@ -63,20 +57,9 @@ const Dashboard = () => {
               <CardTitle>Filters</CardTitle>
             </CardHeader>
             <CardContent>
-              <ProposalFilters
-                search={search}
-                setSearch={setSearch}
-                statusFilter={statusFilter}
-                setStatusFilter={setStatusFilter}
-                priorityFilter={priorityFilter}
-                setPriorityFilter={setPriorityFilter}
-                columnVisibility={columnVisibility}
-                setColumnVisibility={setColumnVisibility}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
-                onExportCSV={onExportCSV}
+              <DashboardFilters
+                proposals={proposals}
+                onFiltersChange={setFilters}
               />
             </CardContent>
           </Card>
